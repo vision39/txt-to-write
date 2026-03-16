@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+name: release-please
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          # This assumes a standard setup. You can change this to 'node', 'python', etc., 
+          # depending on your exact project type if you have package managers.
+          # For a basic HTML/CSS/JS project, 'simple' is often sufficient to just track versions via tags.
+          release-type: simple
