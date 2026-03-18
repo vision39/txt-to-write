@@ -79,6 +79,10 @@
                 <div class="font-thumb" data-font="Shadows Into Light">
                     <span style="font-family:'Shadows Into Light',cursive;font-size:15px;">Shadows</span>
                 </div>
+                <!-- Plus Button to add custom font -->
+                <div class="font-thumb flex items-center justify-center border-dashed border-2 text-gray-400 hover:text-blue-500 hover:border-blue-400" id="addFontBtn" title="Add Custom Font">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
             </div>
 
             <hr class="my-4 border-gray-100">
@@ -185,6 +189,39 @@
         </button>
     </div>
 
+    <!-- Custom Font Upload Modal -->
+    <div id="fontModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="modalOverlay"></div>
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full relative z-10 overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">Upload Custom Font</h3>
+                    <button id="closeFontModal" class="text-gray-400 hover:text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                
+                <p class="text-sm text-gray-600 mb-6">
+                    Upload your own font file (.ttf, .otf, .woff) to use your unique handwriting style. 
+                    Don't have one? You can create your custom handwriting font at 
+                    <a href="https://www.calligraphr.com/" target="_blank" class="text-blue-600 font-semibold hover:underline">Calligraphr.com</a> 
+                    and upload it here.
+                </p>
+
+                <label for="fontUpload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                        <p class="text-xs text-gray-400">TTF, OTF, WOFF, or WOFF2</p>
+                    </div>
+                    <input id="fontUpload" type="file" class="hidden" accept=".ttf,.otf,.woff,.woff2" />
+                </label>
+                
+                <div id="uploadStatus" class="mt-4 text-xs text-center hidden"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/js/script.js"></script>
 
     <!-- SEO Content Section -->
@@ -241,6 +278,7 @@
 
         </div>
     </footer>
+
 
 </body>
 </html>
