@@ -806,14 +806,14 @@ drawBlankCanvas();
 // ==========================================
 // Fetch & Render Contributors from GitHub
 // ==========================================
-(async function loadContributors() {
+document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById('contributorsGrid');
     if (!grid) return;
 
     // Static fallback for when GitHub API is unreachable (e.g. file:// protocol)
     const fallbackContributors = [
-        { login: 'vision39', avatar_url: 'https://avatars.githubusercontent.com/u/87428861?v=4', html_url: 'https://github.com/vision39', contributions: 19 },
-        { login: 'github-actions[bot]', avatar_url: 'https://avatars.githubusercontent.com/in/15368?v=4', html_url: 'https://github.com/apps/github-actions', contributions: 1 }
+        { login: 'vision39', avatar_url: 'https://avatars.githubusercontent.com/u/87428861?v=4', html_url: 'https://github.com/vision39', contributions: 22 },
+        { login: 'github-actions[bot]', avatar_url: 'https://avatars.githubusercontent.com/in/15368?v=4', html_url: 'https://github.com/apps/github-actions', contributions: 2 }
     ];
 
     function renderContributors(contributors) {
@@ -821,12 +821,17 @@ drawBlankCanvas();
             grid.innerHTML = '<p class="text-xs text-gray-400">No contributors found.</p>';
             return;
         }
+        grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto';
         grid.innerHTML = contributors.map(c => `
             <a href="${c.html_url}" target="_blank" rel="noopener noreferrer"
-               class="flex flex-col items-center gap-1.5 group" title="${c.login} — ${c.contributions} contributions">
-                <img src="${c.avatar_url}${c.avatar_url.includes('?') ? '&' : '?'}s=64" alt="${c.login}"
-                     class="w-12 h-12 rounded-full border-2 border-gray-200 group-hover:border-blue-400 transition-all shadow-sm group-hover:shadow-md">
-                <span class="text-xs font-medium text-gray-600 group-hover:text-blue-600 transition-colors">@${c.login}</span>
+               class="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-md transition-all group" 
+               title="${c.login} — ${c.contributions} contributions">
+                <img src="${c.avatar_url}${c.avatar_url.includes('?') ? '&' : '?'}s=96" alt="${c.login}"
+                     class="w-16 h-16 rounded-full ring-2 ring-gray-100 group-hover:ring-blue-100 transition-all">
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">@${c.login}</span>
+                    <span class="text-xs text-gray-500">${c.contributions} contributions</span>
+                </div>
             </a>
         `).join('');
     }
@@ -839,4 +844,4 @@ drawBlankCanvas();
     } catch (e) {
         renderContributors(fallbackContributors);
     }
-})();
+});
