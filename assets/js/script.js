@@ -802,3 +802,41 @@ window.addEventListener('touchend', stopDrag);
 document.fonts.ready.then(() => { syncInputPageStyles(); });
 syncInputPageStyles();
 drawBlankCanvas();
+
+// ==========================================
+// Fetch & Render Contributors from GitHub
+// ==========================================
+(async function loadContributors() {
+    const grid = document.getElementById('contributorsGrid');
+    if (!grid) return;
+
+    // Static fallback for when GitHub API is unreachable (e.g. file:// protocol)
+    const fallbackContributors = [
+        { login: 'vision39', avatar_url: 'https://avatars.githubusercontent.com/u/87428861?v=4', html_url: 'https://github.com/vision39', contributions: 19 },
+        { login: 'github-actions[bot]', avatar_url: 'https://avatars.githubusercontent.com/in/15368?v=4', html_url: 'https://github.com/apps/github-actions', contributions: 1 }
+    ];
+
+    function renderContributors(contributors) {
+        if (contributors.length === 0) {
+            grid.innerHTML = '<p class="text-xs text-gray-400">No contributors found.</p>';
+            return;
+        }
+        grid.innerHTML = contributors.map(c => `
+            <a href="${c.html_url}" target="_blank" rel="noopener noreferrer"
+               class="flex flex-col items-center gap-1.5 group" title="${c.login} — ${c.contributions} contributions">
+                <img src="${c.avatar_url}${c.avatar_url.includes('?') ? '&' : '?'}s=64" alt="${c.login}"
+                     class="w-12 h-12 rounded-full border-2 border-gray-200 group-hover:border-blue-400 transition-all shadow-sm group-hover:shadow-md">
+                <span class="text-xs font-medium text-gray-600 group-hover:text-blue-600 transition-colors">@${c.login}</span>
+            </a>
+        `).join('');
+    }
+
+    try {
+        const res = await fetch('https://api.github.com/repos/vision39/txt-to-write/contributors');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+        renderContributors(data);
+    } catch (e) {
+        renderContributors(fallbackContributors);
+    }
+})();
