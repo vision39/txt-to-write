@@ -207,3 +207,23 @@ body {
     font-size: 24px;
     margin: 0;
 }
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-in {
+    animation-duration: 0.2s;
+    animation-fill-mode: both;
+}
+.fade-in {
+    animation-name: fadeIn;
+}
+.zoom-in {
+    animation-name: zoomIn;
+}

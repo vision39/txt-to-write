@@ -25,6 +25,14 @@ const btnUnderline = document.getElementById('btnUnderline');
 const btnBulletList = document.getElementById('btnBulletList');
 const btnNumberList = document.getElementById('btnNumberList');
 
+// Custom Font Modal elements
+const addFontBtn = document.getElementById('addFontBtn');
+const fontModal = document.getElementById('fontModal');
+const closeFontModal = document.getElementById('closeFontModal');
+const modalOverlay = document.getElementById('modalOverlay');
+const fontUpload = document.getElementById('fontUpload');
+const uploadStatus = document.getElementById('uploadStatus');
+
 // Preload background images
 const bg1Image = new Image();
 bg1Image.src = 'assets/picture/Background 1.jpeg';
@@ -116,12 +124,105 @@ paperGrid.addEventListener('click', (e) => {
 
 fontGrid.addEventListener('click', (e) => {
     const thumb = e.target.closest('.font-thumb');
-    if (!thumb) return;
+    if (!thumb || !thumb.dataset.font) return; // skip the "+" button
     fontGrid.querySelectorAll('.font-thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
     fontSelect.value = thumb.dataset.font;
     syncInputPageStyles();
 });
+
+// ==========================================
+// Custom Font Upload Logic
+// ==========================================
+
+function openFontModal() {
+    fontModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFontModalHandler() {
+    fontModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    uploadStatus.classList.add('hidden');
+    uploadStatus.textContent = '';
+}
+
+addFontBtn.addEventListener('click', openFontModal);
+closeFontModal.addEventListener('click', closeFontModalHandler);
+modalOverlay.addEventListener('click', closeFontModalHandler);
+
+fontUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate size (e.g., max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showUploadError("File is too large (max 5MB)");
+        return;
+    }
+
+    const fileName = file.name;
+    const fontName = 'CustomFont_' + Date.now();
+    const cleanDisplayName = fileName.split('.')[0].substring(0, 15);
+
+    showUploadStatus("Loading font...");
+
+    try {
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        
+        reader.onload = async () => {
+            try {
+                const fontFace = new FontFace(fontName, reader.result);
+                const loadedFace = await fontFace.load();
+                document.fonts.add(loadedFace);
+
+                // 1. Add to the hidden select
+                const option = document.createElement('option');
+                option.value = fontName;
+                option.textContent = cleanDisplayName;
+                fontSelect.appendChild(option);
+
+                // 2. Add to the Sidebar Grid (before the plus button)
+                const newThumb = document.createElement('div');
+                newThumb.className = 'font-thumb';
+                newThumb.dataset.font = fontName;
+                newThumb.innerHTML = `<span style="font-family:'${fontName}', cursive; font-size: 15px;">${cleanDisplayName}</span>`;
+                
+                fontGrid.insertBefore(newThumb, addFontBtn);
+
+                // 3. Select it
+                newThumb.click();
+
+                showUploadSuccess("Font uploaded successfully!");
+                setTimeout(closeFontModalHandler, 1000);
+            } catch (err) {
+                console.error("Font loading error:", err);
+                showUploadError("Failed to load font. Is it a valid font file?");
+            }
+        };
+    } catch (err) {
+        showUploadError("Error reading file.");
+    }
+});
+
+function showUploadStatus(msg) {
+    uploadStatus.textContent = msg;
+    uploadStatus.className = 'mt-4 text-xs text-center text-blue-600';
+    uploadStatus.classList.remove('hidden');
+}
+
+function showUploadError(msg) {
+    uploadStatus.textContent = msg;
+    uploadStatus.className = 'mt-4 text-xs text-center text-red-500';
+    uploadStatus.classList.remove('hidden');
+}
+
+function showUploadSuccess(msg) {
+    uploadStatus.textContent = msg;
+    uploadStatus.className = 'mt-4 text-xs text-center text-green-600';
+    uploadStatus.classList.remove('hidden');
+}
 
 
 
