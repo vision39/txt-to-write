@@ -356,6 +356,7 @@ const darkModeToggle = document.getElementById('dark-mode-toggle');
 const toggleText = darkModeToggle.querySelector('span'); 
 const moonIcon = document.getElementById('moon-icon');
 const sunIcon = document.getElementById('sun-icon');
+const siteLogo = document.getElementById('siteLogo');
 
 // Helper function to apply colors
 function applyTheme(theme) {
@@ -366,11 +367,13 @@ function applyTheme(theme) {
         toggleText.textContent = 'Light Mode';
         moonIcon.classList.replace('block', 'hidden');
         sunIcon.classList.replace('hidden', 'block');
+        if (siteLogo) siteLogo.src = 'assets/picture/icon-nobg.png';
     } else {
         document.body.classList.remove('dark-mode');
         toggleText.textContent = 'Dark Mode';
         sunIcon.classList.replace('block', 'hidden');
         moonIcon.classList.replace('hidden', 'block');
+        if (siteLogo) siteLogo.src = 'assets/picture/icon.png';
     }
     
     // Add Accessibility (ARIA) states for screen readers
