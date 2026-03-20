@@ -5,7 +5,7 @@
  * all UI modules, and boots the application.
  */
 
-import { downloadCanvasAsImage } from './utils.js';
+import { downloadCanvasAsImage, downloadCanvasAsPDF } from './utils.js';
 import {
   PAPER_PADDING_LEFT,
   PAPER_PADDING_RIGHT,
@@ -47,7 +47,8 @@ const el = {
 
   // Header buttons
   generateBtn: document.getElementById('generateBtn'),
-  downloadBtn: document.getElementById('downloadBtn'),
+  downloadImageBtn: document.getElementById('downloadImageBtn'),
+  downloadPDFBtn: document.getElementById('downloadPDFBtn'),
   resetLayoutBtn: document.getElementById('resetLayoutBtn'),
 
   // Editor toolbar
@@ -231,8 +232,10 @@ function generateCanvas() {
   state.isCanvasGenerated = true;
   state.currentPage = 0; // Reset to page 1 on fresh generation
 
-  el.downloadBtn.disabled = false;
-  el.downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+  el.downloadImageBtn.disabled = false;
+  el.downloadPDFBtn.disabled = false;
+  el.downloadImageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+  el.downloadPDFBtn.classList.remove('opacity-50', 'cursor-not-allowed');
   el.resetLayoutBtn.classList.remove('hidden');
 
   syncTextState();
@@ -244,10 +247,16 @@ function generateCanvas() {
 // Generate button
 el.generateBtn.addEventListener('click', generateCanvas);
 
-// Download button
-el.downloadBtn.addEventListener('click', () => {
+// Download Image button
+el.downloadImageBtn.addEventListener('click', () => {
   if (!state.isCanvasGenerated) return;
   downloadCanvasAsImage(el.canvas);
+});
+
+// Download PDF button
+el.downloadPDFBtn.addEventListener('click', () => {
+  if (!state.isCanvasGenerated) return;
+  downloadCanvasAsPDF(el.canvas);
 });
 
 // Ink colour picker (global)
