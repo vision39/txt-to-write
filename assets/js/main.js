@@ -5,7 +5,7 @@
  * all UI modules, and boots the application.
  */
 
-import { downloadCanvasAsImage, downloadCanvasAsPDF } from './utils.js';
+import { addCanvasPageToPDF, downloadCanvasAsImage } from './utils.js';
 import {
   PAPER_PADDING_LEFT,
   PAPER_PADDING_RIGHT,
@@ -55,6 +55,7 @@ const el = {
   downloadMenu: document.getElementById('downloadMenu'),
   downloadCurrentBtn: document.getElementById('downloadCurrentBtn'),
   downloadAllBtn: document.getElementById('downloadAllBtn'),
+  downloadPDFBtn: document.getElementById('downloadPDFBtn'),
 
   // Editor toolbar
   btnUnderline: document.getElementById('btnUnderline'),
@@ -243,9 +244,9 @@ function generateCanvas() {
   state.isCanvasGenerated = true;
   state.currentPage = 0; // Reset to page 1 on fresh generation
 
-  el.downloadImageBtn.disabled = false;
+  el.downloadBtn.disabled = false;
   el.downloadPDFBtn.disabled = false;
-  el.downloadImageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+  el.downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
   el.downloadPDFBtn.classList.remove('opacity-50', 'cursor-not-allowed');
   el.resetLayoutBtn.classList.remove('hidden');
 
@@ -327,6 +328,60 @@ if (el.downloadAllBtn) {
     }
   });
 }
+
+// Downlaod PDF
+if (el.downloadPDFBtn) {
+  const { jsPDF } = window.jspdf;
+  const pdfDoc = new jsPDF({
+    unit: 'pt',
+    format: [state.pageArea.w + PAPER_PADDING_LEFT + PAPER_PADDING_RIGHT, 
+            state.pageArea.h + PAPER_PADDING_TOP + PAPER_PADDING_BOTTOM
+    ],
+  });
+  el.downloadPDFBtn.addEventListener('click', async () => {
+    el.downloadMenu.classList.add('hidden');
+    if (!state.isCanvasGenerated) return;
+
+    const originalPage = state.currentPage;
+    const origDownloadText = el.downloadPDFBtn.textContent;
+
+    // Disable button and other interactive elements to prevent state corruption
+    el.downloadPDFBtn.disabled = true;
+    el.downloadBtn.disabled = true;
+    el.generateBtn.disabled = true;
+    el.textInput.contentEditable = 'false';
+    el.downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    el.downloadPDFBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    el.downloadPDFBtn.textContent = "Downloading...";
+
+    try {
+      const timestamp = Date.now(); // Use a single timestamp for the batch
+      for (let i = 0; i < state.totalPages; i++) {
+        state.currentPage = i;
+        renderCanvas();
+
+        // Wait for canvas to repaint and to space out downloads to avoid browser blocking
+        await new Promise(r => setTimeout(r, 250));
+
+        // Note: assumes downloadCanvasAsImage takes (canvas, pageNum, timestamp)
+        addCanvasPageToPDF(pdfDoc, el.canvas, i + 1, timestamp);
+      }
+    } finally {
+      // Restore UI state safely
+      pdfDoc.save(`handwritten-note-${Date.now()}.pdf`);
+      state.currentPage = originalPage;
+      renderCanvas();
+      el.downloadPDFBtn.textContent = origDownloadText;
+      el.downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      el.downloadPDFBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      el.downloadBtn.disabled = false;
+      el.downloadPDFBtn.disabled = false;
+      el.generateBtn.disabled = false;
+      el.textInput.contentEditable = 'true';
+    }
+  });
+}
+
 
 // Ink colour picker (global)
 el.inkColorInput.addEventListener('input', () => {

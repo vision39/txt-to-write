@@ -64,21 +64,17 @@ export function downloadCanvasAsImage(canvas, pageNum = null, timestamp = Date.n
   link.click();
 }
 
-/**
- * Trigger a browser download of the canvas contents as a PDF file.
- *
- * @param {HTMLCanvasElement} canvas
- */
-export function downloadCanvasAsPDF(canvas) {
-  const { jsPDF } = window.jspdf;
+export function addCanvasPageToPDF(pdfDoc, canvas, pageNum, timestamp) {
   const imgData = canvas.toDataURL("image/png");
 
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "px",
-    format: [canvas.width, canvas.height],
-  });
+  const pdfWidth = pdfDoc.internal.pageSize.getWidth();
+  const pdfHeight = pdfDoc.internal.pageSize.getHeight();
 
-  pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-  pdf.save(`handwritten-note-${Date.now()}.pdf`);
+  // Add new page for all pages except the first
+  if (pageNum > 1) {
+    pdfDoc.addPage([pdfWidth, pdfHeight]);
+  }
+
+  // Draw image to PDF page
+  pdfDoc.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 }
