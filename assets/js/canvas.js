@@ -341,15 +341,42 @@ function wordWrap(ctx, text, maxWidth) {
   let currentLine = '';
 
   for (let i = 0; i < words.length; i++) {
-    const testLine = currentLine + words[i] + ' ';
-    if (ctx.measureText(testLine).width > maxWidth && i > 0) {
-      lines.push(currentLine);
-      currentLine = words[i] + ' ';
+    let word = words[i];
+
+    if (ctx.measureText(currentLine + word + ' ').width > maxWidth) {
+      if (currentLine !== '') {
+        lines.push(currentLine);
+        currentLine = '';
+      }
+
+      if (ctx.measureText(word + ' ').width > maxWidth) {
+        let brokenWord = '';
+        for (let j = 0; j < word.length; j++) {
+          const char = word[j];
+          if (ctx.measureText(brokenWord + char).width > maxWidth) {
+            if (brokenWord !== '') {
+              lines.push(brokenWord);
+              brokenWord = char;
+            } else {
+              brokenWord = char;
+            }
+          } else {
+            brokenWord += char;
+          }
+        }
+        currentLine = brokenWord + ' ';
+      } else {
+        currentLine = word + ' ';
+      }
     } else {
-      currentLine = testLine;
+      currentLine += word + ' ';
     }
   }
-  lines.push(currentLine);
+
+  if (currentLine !== '') {
+    lines.push(currentLine);
+  }
+
   return lines;
 }
 
