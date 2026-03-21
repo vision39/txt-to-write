@@ -290,32 +290,35 @@ if (el.downloadAllBtn) {
   el.downloadAllBtn.addEventListener('click', async () => {
     el.downloadMenu.classList.add('hidden');
     if (!state.isCanvasGenerated) return;
-    
-    // Save current state
+
     const originalPage = state.currentPage;
     const origDownloadText = el.downloadBtnText.textContent;
-    
-    // Temporary UI update
+
+    // Disable button and show downloading state
+    el.downloadBtn.disabled = true;
+    el.downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
     el.downloadBtnText.textContent = "Downloading...";
-    el.downloadBtn.classList.add('opacity-80');
 
-    for (let i = 0; i < state.totalPages; i++) {
-      state.currentPage = i;
+    try {
+      const timestamp = Date.now(); // Use a single timestamp for the batch
+      for (let i = 0; i < state.totalPages; i++) {
+        state.currentPage = i;
+        renderCanvas();
+
+        // Wait for canvas to repaint and to space out downloads to avoid browser blocking
+        await new Promise(r => setTimeout(r, 250));
+
+        // Note: assumes downloadCanvasAsImage takes (canvas, pageNum, timestamp)
+        downloadCanvasAsImage(el.canvas, i + 1, timestamp);
+      }
+    } finally {
+      // Restore UI state safely
+      state.currentPage = originalPage;
       renderCanvas();
-      
-      // Allow the DOM/Canvas to update sequentially
-      await new Promise(r => setTimeout(r, 100)); 
-      
-      // Optionally wait slightly more to prevent browser from blocking
-      await new Promise(r => setTimeout(r, 150));
-      downloadCanvasAsImage(el.canvas, i + 1);
+      el.downloadBtnText.textContent = origDownloadText;
+      el.downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      el.downloadBtn.disabled = false;
     }
-
-    // Restore to original page
-    state.currentPage = originalPage;
-    renderCanvas();
-    el.downloadBtnText.textContent = origDownloadText;
-    el.downloadBtn.classList.remove('opacity-80');
   });
 }
 

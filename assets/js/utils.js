@@ -56,10 +56,10 @@ export function showUploadStatus(statusElement, message, type = 'info') {
  *
  * @param {HTMLCanvasElement} canvas
  */
-export function downloadCanvasAsImage(canvas, pageNum = null) {
+export function downloadCanvasAsImage(canvas, pageNum = null, timestamp = Date.now()) {
   const link = document.createElement('a');
   const suffix = pageNum ? `-page-${pageNum}` : '';
-  link.download = `handwritten-note${suffix}-${Date.now()}.png`;
+  link.download = `handwritten-note${suffix}-${timestamp}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
 }
