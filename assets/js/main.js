@@ -417,19 +417,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto';
+    grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-4xl mx-auto';
     grid.innerHTML = contributors
       .map(
         (c) => `
       <a href="${c.html_url}" target="_blank" rel="noopener noreferrer"
-         class="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-md transition-all group"
-         title="${c.login} — ${c.contributions} contributions">
+         class="flex flex-col items-center justify-center gap-3 bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-md transition-all group aspect-square"
+         title="@${c.login}">
         <img src="${c.avatar_url}${c.avatar_url.includes('?') ? '&' : '?'}s=96" alt="${c.login}"
              class="w-16 h-16 rounded-full ring-2 ring-gray-100 group-hover:ring-blue-100 transition-all">
-        <div class="flex flex-col">
-          <span class="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">@${c.login}</span>
-          <span class="text-xs text-gray-500">${c.contributions} contributions</span>
-        </div>
+        <span class="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors text-center w-full truncate">@${c.login}</span>
       </a>`
       )
       .join('');
