@@ -106,7 +106,7 @@ const bg1Image = new Image();
 bg1Image.src = 'assets/picture/Background 1.jpeg';
 
 // ─── Shared Application State ───────────────────────────────────────
-
+const { jsPDF } = window.jspdf;
 const state = {
   paragraphsState: [],
   selectedParaIndex: -1,
@@ -331,16 +331,17 @@ if (el.downloadAllBtn) {
 
 // Downlaod PDF
 if (el.downloadPDFBtn) {
-  const { jsPDF } = window.jspdf;
-  const pdfDoc = new jsPDF({
-    unit: 'pt',
-    format: [state.pageArea.w + PAPER_PADDING_LEFT + PAPER_PADDING_RIGHT, 
-            state.pageArea.h + PAPER_PADDING_TOP + PAPER_PADDING_BOTTOM
-    ],
-  });
   el.downloadPDFBtn.addEventListener('click', async () => {
     el.downloadMenu.classList.add('hidden');
     if (!state.isCanvasGenerated) return;
+
+    
+    const pdfDoc = new jsPDF({
+      unit: 'pt',
+      format: [state.pageArea.w + PAPER_PADDING_LEFT + PAPER_PADDING_RIGHT, 
+              state.pageArea.h + PAPER_PADDING_TOP + PAPER_PADDING_BOTTOM
+      ],
+    });
 
     const originalPage = state.currentPage;
     const origDownloadText = el.downloadPDFBtn.textContent;
