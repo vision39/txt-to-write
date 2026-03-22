@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/vision39/txt-to-handwriting/compare/v1.2.0...v1.3.0) (2026-03-22)
+
+
+### Features
+
+* Add PDF Download Button ([#24](https://github.com/vision39/txt-to-handwriting/issues/24)) ([9bf18f9](https://github.com/vision39/txt-to-handwriting/commit/9bf18f94bc8b9333634541d2ce8a73306d9a3a20))
+
 ## [1.2.0](https://github.com/vision39/txt-to-handwriting/compare/v1.1.1...v1.2.0) (2026-03-21)
 
 
